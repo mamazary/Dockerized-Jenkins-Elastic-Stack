@@ -1,0 +1,41 @@
+version: '3.2'
+ 
+services:
+ jenkins:
+  build:
+   context: jenkins/
+  image: mamazary/jenkins-preconfigured
+  volumes:
+   - type: volume
+     source: jenkins-logs
+     target: /var/log/jenkins/
+   - type: volume
+     source: jenkins-home
+     target: /var/jenkins_home/
+  ports:
+   - 8080:8080
+  environment:
+   JENKINS_ADMIN_USER: ${JENKINS_ADMIN_USER}
+   JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD}
+   JENKINS_IP: ${JENKINS_IP}
+  networks:
+   - internal_network
+ 
+ filebeat:
+  build:
+   context: filebeat/
+  image: mamazary/filebeat-jenkins
+  volumes:
+   - type: volume
+     source: jenkins-logs
+     target: /var/log/jenkins/
+  networks:
+   - internal_network
+
+networks:
+ internal_network:
+   external: true
+ 
+volumes:
+ jenkins-logs:
+ jenkins-home:
